@@ -29,8 +29,8 @@ module.exports = function(grunt) {
       files: ['grunt.js', 'lib/**/*.js', 'test/**/*.js']
     },
     watch: {
-      files: '<config:lint.files>',
-      tasks: 'lint test'
+      files: ['grunt.js', 'src/**/*.coffee', 'test/**/*.coffee'],
+      tasks: 'coffee test'
     },
     jshint: {
       options: {
@@ -50,10 +50,32 @@ module.exports = function(grunt) {
         module: false
       }
     },
+    coffee: {
+      app: {
+        src: ['src/*.coffee'],
+        dest: 'lib',
+        options: {
+          bare: false
+        }
+      },
+      test: {
+        src: ['test/*.coffee'],
+        dest: 'test/specs',
+        options: {
+          bare: true
+        }
+      }
+    },
+    mocha: {
+      index: ['test/index.html']
+    },
     uglify: {}
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint test concat min');
+  grunt.registerTask('default', 'coffee mocha concat min');
+  grunt.registerTask('test', 'coffee mocha');
+  grunt.loadNpmTasks('grunt-coffee');
+  grunt.loadNpmTasks('grunt-mocha');
 
 };
