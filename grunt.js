@@ -12,14 +12,19 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['<banner:meta.banner>', '<file_strip_banner:lib/<%= pkg.name %>.js>'],
-        dest: 'dist/<%= pkg.name %>.js'
+        src: [
+          '<banner:meta.banner>',
+          'lib/ok.js',
+          'lib/validator.js',
+          'lib/errors.js'
+        ],
+        dest: 'dist/ok.js'
       }
     },
     min: {
       dist: {
         src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'dist/<%= pkg.name %>.min.js'
+        dest: 'dist/ok.min.js'
       }
     },
     test: {
@@ -30,7 +35,7 @@ module.exports = function(grunt) {
     },
     watch: {
       files: ['grunt.js', 'src/**/*.coffee', 'test/**/*.coffee'],
-      tasks: 'coffee test'
+      tasks: 'coffee concat test'
     },
     jshint: {
       options: {
@@ -59,7 +64,7 @@ module.exports = function(grunt) {
         }
       },
       test: {
-        src: ['test/*.coffee'],
+        src: ['test/coffee/*.coffee'],
         dest: 'test/specs',
         options: {
           bare: true
@@ -73,7 +78,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'coffee mocha concat min');
+  grunt.registerTask('default', 'coffee concat min mocha');
   grunt.registerTask('test', 'coffee mocha');
   grunt.loadNpmTasks('grunt-coffee');
   grunt.loadNpmTasks('grunt-mocha');

@@ -21,7 +21,7 @@
       "url": "https://github.com/anthonyshort/ok.js/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "lib/ok.js",
+  "main": "dist/ok.js",
   "engines": {
     "node": "*"
   },
@@ -31,7 +31,7 @@
   "devDependencies": {
     "grunt": "~0.3.15",
     "grunt-coffee": "*",
-    "grunt-mocha": "*",
+    "grunt-mocha": "*"
   },
   "keywords": []
 }
