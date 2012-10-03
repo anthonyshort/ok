@@ -26,9 +26,11 @@
     "node": "*"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "postinstall": "bower install & grunt"
   },
   "devDependencies": {
+    "bower": "*",
     "grunt": "~0.3.15",
     "grunt-coffee": "*",
     "grunt-mocha": "*"

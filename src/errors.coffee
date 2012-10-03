@@ -6,21 +6,28 @@ class OK.Errors
   # Add a single error for an attribute.
   add: (attr, rule, message) ->
     @errors[attr] or= {}
-    @errors[attr][rule] = message or "Invalid: '#{attr}' for '#{rule}' with the value '#{@data[attr]}'"
-    @length += 1
+    @length += 1 unless @errors[attr][rule]
+    @errors[attr][rule] = message or "Invalid: '#{attr}' for '#{rule}'"
     @errors
 
-  isValid: ->
-    @length is 0
+  isValid: (attr) ->
+    not @errors[attr]?
 
-  get: (attr, rule) ->
-    if rule and @errors[attr]
-      @errors[attr][rule]
+  get: (attr) ->
+    @errors[attr] or false
+
+  invalid: (attr) ->
+    return false unless @errors[attr]
+    _.keys(@errors[attr])
+
+  value: (attr) ->
+    @data[attr]
+
+  each: (attr, callback) ->
+    if _.isFunction(attr)
+      _.each @errors, attr, @
     else
-      @errors[attr] or false
-
-  each: (callback, context = @) ->
-    _.each @errors, callback, context
+      _.each @errors[attr], callback, @
 
   toJSON: ->
     @errors

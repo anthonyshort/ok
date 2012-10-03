@@ -48,10 +48,10 @@ class OK.Validator
     not val? or _.isBoolean(val)
 
   max: (val, num) ->
-    val <= num
+    not val? or val <= num
 
   min: (val, num) ->
-    val >= num
+    not val? or val >= num
 
   length: (val, length) ->
     if val? and val.length then val.length is length else false

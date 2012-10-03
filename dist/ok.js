@@ -1,4 +1,4 @@
-/*! ok.js - v0.1.0 - 2012-10-01
+/*! ok.js - v0.1.0 - 2012-10-03
 * https://github.com/anthonyshort/ok.js
 * Copyright (c) 2012 Anthony Short; Licensed MIT */
 
@@ -19,29 +19,33 @@
     }
 
     OK.prototype.validate = function(attributes) {
-      var attribute, errors, message, options, ruleValue, type, valid, validator, value, _i, _len, _ref;
+      var attribute, errors, message, options, ruleValue, type, valid, validator, value, _ref, _ref1, _ref2, _ref3;
       errors = new OK.Errors(attributes);
-      for (attribute in attributes) {
-        if (!__hasProp.call(attributes, attribute)) continue;
+      _ref = this.schema;
+      for (attribute in _ref) {
+        if (!__hasProp.call(_ref, attribute)) continue;
+        options = _ref[attribute];
         value = attributes[attribute];
-        if (!this.schema[attribute]) {
-          continue;
-        }
-        options = this.schema[attribute];
-        _ref = options.rules;
-        for (ruleValue = _i = 0, _len = _ref.length; _i < _len; ruleValue = ++_i) {
-          type = _ref[ruleValue];
-          if (typeof ruleValue === 'function') {
-            message = ruleValue.call(this, value, attributes);
-            if (message !== true || message === null || message === void 0) {
-              errors.add(attribute, type, message);
+        if (value != null) {
+          _ref1 = options.rules;
+          for (type in _ref1) {
+            ruleValue = _ref1[type];
+            if (typeof ruleValue === 'function') {
+              message = ruleValue.call(this, value, attributes);
+              if (message !== true || message === null || message === void 0) {
+                errors.add(attribute, type, message);
+              }
+            } else {
+              validator = new OK.Validator;
+              valid = validator.check(type, value, ruleValue, attributes);
+              if (!valid) {
+                errors.add(attribute, type, (_ref2 = options.messages) != null ? _ref2[type] : void 0);
+              }
             }
-          } else {
-            validator = new OK.Validator;
-            valid = validator.check(type, value, ruleValue, attributes);
-            if (!valid) {
-              errors.add(attribute, type, options.messages[type]);
-            }
+          }
+        } else {
+          if (options.rules.required === true) {
+            errors.add(attribute, 'required', (_ref3 = options.messages) != null ? _ref3.required : void 0);
           }
         }
       }
@@ -128,11 +132,11 @@
     };
 
     Validator.prototype.max = function(val, num) {
-      return val <= num;
+      return !(val != null) || val <= num;
     };
 
     Validator.prototype.min = function(val, num) {
-      return val >= num;
+      return !(val != null) || val >= num;
     };
 
     Validator.prototype.length = function(val, length) {
@@ -204,28 +208,38 @@
     Errors.prototype.add = function(attr, rule, message) {
       var _base;
       (_base = this.errors)[attr] || (_base[attr] = {});
-      this.errors[attr][rule] = message || ("Invalid: '" + attr + "' for '" + rule + "' with the value '" + this.data[attr] + "'");
-      this.length += 1;
+      if (!this.errors[attr][rule]) {
+        this.length += 1;
+      }
+      this.errors[attr][rule] = message || ("Invalid: '" + attr + "' for '" + rule + "'");
       return this.errors;
     };
 
-    Errors.prototype.isValid = function() {
-      return this.length === 0;
+    Errors.prototype.isValid = function(attr) {
+      return !(this.errors[attr] != null);
     };
 
-    Errors.prototype.get = function(attr, rule) {
-      if (rule && this.errors[attr]) {
-        return this.errors[attr][rule];
+    Errors.prototype.get = function(attr) {
+      return this.errors[attr] || false;
+    };
+
+    Errors.prototype.invalid = function(attr) {
+      if (!this.errors[attr]) {
+        return false;
+      }
+      return _.keys(this.errors[attr]);
+    };
+
+    Errors.prototype.value = function(attr) {
+      return this.data[attr];
+    };
+
+    Errors.prototype.each = function(attr, callback) {
+      if (_.isFunction(attr)) {
+        return _.each(this.errors, attr, this);
       } else {
-        return this.errors[attr] || false;
+        return _.each(this.errors[attr], callback, this);
       }
-    };
-
-    Errors.prototype.each = function(callback, context) {
-      if (context == null) {
-        context = this;
-      }
-      return _.each(this.errors, callback, context);
     };
 
     Errors.prototype.toJSON = function() {
