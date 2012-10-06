@@ -10,21 +10,20 @@ class OK
   constructor: (@schema) ->
 
   validate: (attributes) ->
-    errors = new OK.Errors(attributes)
+    errors = new OK.Errors
 
-    for own attribute, options of @schema
+    for own attribute, rules of @schema
       value = attributes[attribute]
 
       if value?
-        for type, ruleValue of options.rules
+        for type, ruleValue of rules
           # The rule value can be a function that accepts the value and the attributes
           # as parameters to allow for custom validation methods onthe fly
           if typeof ruleValue is 'function'
-            message = ruleValue.call @, value, attributes
+            valid = ruleValue.call @, value, attributes
             # Inline validators need to return true or the message for the error.
             # If the return value is null or undefined we will assume that it is valid
-            if message isnt true or message is null or message is undefined
-              errors.add attribute, type, message
+            errors.add attribute, type unless valid
           # Otherwise we'll use the built-in validator class to
           # determine whether an attribute is valid
           else
@@ -33,9 +32,9 @@ class OK
             # enable new validation types
             validator = new OK.Validator
             valid = validator.check(type, value, ruleValue, attributes)
-            unless valid then errors.add attribute, type, options.messages?[type]
+            unless valid then errors.add attribute, type
       else
-        if options.rules.required is true then errors.add attribute, 'required', options.messages?.required
+        if rules.required is true then errors.add attribute, 'required'
 
     # Return the errors object
     errors

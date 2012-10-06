@@ -19,33 +19,32 @@
     }
 
     OK.prototype.validate = function(attributes) {
-      var attribute, errors, message, options, ruleValue, type, valid, validator, value, _ref, _ref1, _ref2, _ref3;
-      errors = new OK.Errors(attributes);
+      var attribute, errors, ruleValue, rules, type, valid, validator, value, _ref;
+      errors = new OK.Errors;
       _ref = this.schema;
       for (attribute in _ref) {
         if (!__hasProp.call(_ref, attribute)) continue;
-        options = _ref[attribute];
+        rules = _ref[attribute];
         value = attributes[attribute];
         if (value != null) {
-          _ref1 = options.rules;
-          for (type in _ref1) {
-            ruleValue = _ref1[type];
+          for (type in rules) {
+            ruleValue = rules[type];
             if (typeof ruleValue === 'function') {
-              message = ruleValue.call(this, value, attributes);
-              if (message !== true || message === null || message === void 0) {
-                errors.add(attribute, type, message);
+              valid = ruleValue.call(this, value, attributes);
+              if (!valid) {
+                errors.add(attribute, type);
               }
             } else {
               validator = new OK.Validator;
               valid = validator.check(type, value, ruleValue, attributes);
               if (!valid) {
-                errors.add(attribute, type, (_ref2 = options.messages) != null ? _ref2[type] : void 0);
+                errors.add(attribute, type);
               }
             }
           }
         } else {
-          if (options.rules.required === true) {
-            errors.add(attribute, 'required', (_ref3 = options.messages) != null ? _ref3.required : void 0);
+          if (rules.required === true) {
+            errors.add(attribute, 'required');
           }
         }
       }
@@ -199,19 +198,18 @@
 
   OK.Errors = (function() {
 
-    function Errors(data) {
-      this.data = data;
+    function Errors() {
       this.errors = {};
       this.length = 0;
     }
 
-    Errors.prototype.add = function(attr, rule, message) {
+    Errors.prototype.add = function(attr, rule) {
       var _base;
-      (_base = this.errors)[attr] || (_base[attr] = {});
-      if (!this.errors[attr][rule]) {
+      (_base = this.errors)[attr] || (_base[attr] = []);
+      if (!_.contains(this.errors[attr], rule)) {
         this.length += 1;
+        this.errors[attr].push(rule);
       }
-      this.errors[attr][rule] = message || ("Invalid: '" + attr + "' for '" + rule + "'");
       return this.errors;
     };
 
@@ -227,11 +225,7 @@
       if (!this.errors[attr]) {
         return false;
       }
-      return _.keys(this.errors[attr]);
-    };
-
-    Errors.prototype.value = function(attr) {
-      return this.data[attr];
+      return this.errors[attr];
     };
 
     Errors.prototype.each = function(attr, callback) {

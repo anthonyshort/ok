@@ -49,12 +49,12 @@ describe('OK.Validator', function() {
   });
   it('should validate alphanumeric', function() {
     var value, _i, _j, _len, _len1, _ref, _ref1, _results;
-    _ref = ['abc123', 'abc', '123', 'ABC123', null, void 0];
+    _ref = ['abc123', 'abc', '123', 'ABC123'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.alphanumeric(value)).to.be["true"];
     }
-    _ref1 = ['-', '&!$@#*', 'a b c', false];
+    _ref1 = ["Anthony's bike", '-', '&!$@#*', 'a b c', false, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -64,12 +64,12 @@ describe('OK.Validator', function() {
   });
   it('should validate hex', function() {
     var value, _i, _j, _len, _len1, _ref, _ref1, _results;
-    _ref = ['#111', '#111111', '#fff', '#FFF', null, void 0];
+    _ref = ['#111', '#111111', '#fff', '#FFF'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.hex(value)).to.be["true"];
     }
-    _ref1 = ['#GGG', 'abc', 'fff', '#0000000', false];
+    _ref1 = ['#GGG', 'abc', 'fff', '#0000000', false, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -79,12 +79,12 @@ describe('OK.Validator', function() {
   });
   it('should validate strings', function() {
     var value, _i, _j, _len, _len1, _ref, _ref1, _results;
-    _ref = ['string', null, void 0];
+    _ref = ['string'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.string(value)).to.be["true"];
     }
-    _ref1 = [123, false];
+    _ref1 = [123, false, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -94,12 +94,12 @@ describe('OK.Validator', function() {
   });
   it('should validate numbers', function() {
     var value, _i, _j, _len, _len1, _ref, _ref1, _results;
-    _ref = [123, 1.23, -1, -1.23, '1', '-1', null, void 0];
+    _ref = [123, 1.23, -1, -1.23, '1', '-1'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.number(value)).to.be["true"];
     }
-    _ref1 = ['string', false];
+    _ref1 = ['string', false, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -109,12 +109,12 @@ describe('OK.Validator', function() {
   });
   it('should validate arrays', function() {
     var value, _i, _j, _len, _len1, _ref, _ref1, _results;
-    _ref = [[], null, void 0];
+    _ref = [[]];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.array(value)).to.be["true"];
     }
-    _ref1 = ['string', false, 123];
+    _ref1 = ['string', false, 123, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -124,12 +124,12 @@ describe('OK.Validator', function() {
   });
   it('should validate dates', function() {
     var value, _i, _j, _len, _len1, _ref, _ref1, _results;
-    _ref = ['1 January 2012', '1/1/2012', new Date, null, void 0];
+    _ref = ['1 January 2012', '1/1/2012', new Date];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.date(value)).to.be["true"];
     }
-    _ref1 = ['string', false];
+    _ref1 = ['string', false, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -139,12 +139,12 @@ describe('OK.Validator', function() {
   });
   it('should validate booleans', function() {
     var value, _i, _j, _len, _len1, _ref, _ref1, _results;
-    _ref = [true, false, null, void 0];
+    _ref = [true, false];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.boolean(value)).to.be["true"];
     }
-    _ref1 = ['string', 123];
+    _ref1 = ['string', 123, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -159,7 +159,7 @@ describe('OK.Validator', function() {
       value = _ref[_i];
       expect(this.validator.max(value, 2)).to.be["true"];
     }
-    _ref1 = [2.01, 3];
+    _ref1 = [2.01, 3, null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -174,7 +174,7 @@ describe('OK.Validator', function() {
       value = _ref[_i];
       expect(this.validator.min(value, 2)).to.be["true"];
     }
-    _ref1 = [-1, '-1'];
+    _ref1 = [-1, '-1', null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -189,7 +189,7 @@ describe('OK.Validator', function() {
       value = _ref[_i];
       expect(this.validator.length(value, 3)).to.be["true"];
     }
-    _ref1 = ['foo'];
+    _ref1 = ['foo', null, void 0];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
@@ -279,12 +279,12 @@ describe('OK.Validator', function() {
   });
   it('should validate pattern', function() {
     var value, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
-    _ref = ['foo', null, void 0];
+    _ref = ['foo'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       expect(this.validator.pattern(value, /^foo$/)).to.be["true"];
     }
-    _ref1 = [0, 'bar', false];
+    _ref1 = [0, 'bar', false, null, void 0];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       value = _ref1[_j];
       expect(this.validator.pattern(value, /^foo$/)).to.be["false"];

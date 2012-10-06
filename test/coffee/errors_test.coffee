@@ -8,22 +8,16 @@ describe 'OK.Errors', ->
     @errors.add 'foo', 'equalTo'
     expect(@errors.length).to.equal 1
 
-  it 'should replace the error is an error for the same rule is applied more than once', ->
-    @errors.add 'foo', 'equalTo', 'bar'
-    @errors.add 'foo', 'equalTo', 'baz'
+  it 'should replace the error if an error for the same rule is applied more than once', ->
+    @errors.add 'foo', 'equalTo'
+    @errors.add 'foo', 'equalTo'
     expect(@errors.length).to.equal 1
-    expect(@errors.get('foo').equalTo).to.equal 'baz'
+    expect(@errors.get('foo').length).to.equal 1
 
   it 'should return the errors for an attribute', ->
     @errors.add 'foo', 'equalTo'
     errors = @errors.get('foo')
-    expected = 'equalTo': "Invalid: 'foo' for 'equalTo'"
-    expect(errors).to.deep.equal expected
-
-  it 'should accept a custom error message', ->
-    @errors.add 'foo', 'required', 'bar' 
-    errors = @errors.get('foo')
-    expected = 'required': 'bar'
+    expected = [ 'equalTo' ]
     expect(errors).to.deep.equal expected
 
   it 'should return an array of invalid rules for an attribute', ->
@@ -40,14 +34,11 @@ describe 'OK.Errors', ->
     @errors.add 'foo', 'required', 'bar' 
     expect(@errors.isValid('foo')).to.be.false
 
-  it 'should return the value for an attribute', ->
-    expect(@errors.value('foo')).to.equal 'bar'
-
   it 'should loop over all errors for an attribute', ->
     @errors.add 'foo', 'required'
     @errors.add 'foo', 'equalTo'
     rules = []
-    @errors.each 'foo', (message, rule) -> rules.push rule
+    @errors.each 'foo', (rule) -> rules.push rule
     expect(rules).to.deep.equal ['required', 'equalTo']
 
   it 'should loop over all errors', ->
@@ -59,11 +50,10 @@ describe 'OK.Errors', ->
 
   it 'should return a json object of the errors', ->
     @errors.add 'foo', 'required'
+    @errors.add 'foo', 'equalTo'
     @errors.add 'bar', 'equalTo'
     expected = 
-      foo:
-        required: "Invalid: 'foo' for 'required'"
-      bar:
-        equalTo: "Invalid: 'bar' for 'equalTo'"
+      foo: [ 'required', 'equalTo' ]
+      bar: [ 'equalTo' ]
 
     expect(@errors.toJSON()).to.deep.equal expected

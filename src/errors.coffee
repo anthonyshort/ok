@@ -1,13 +1,14 @@
 class OK.Errors
-  constructor: (@data) ->
+  constructor: ->
     @errors = {}
     @length = 0
 
   # Add a single error for an attribute.
-  add: (attr, rule, message) ->
-    @errors[attr] or= {}
-    @length += 1 unless @errors[attr][rule]
-    @errors[attr][rule] = message or "Invalid: '#{attr}' for '#{rule}'"
+  add: (attr, rule) ->
+    @errors[attr] or= []
+    unless _.contains @errors[attr], rule 
+      @length += 1 
+      @errors[attr].push rule
     @errors
 
   isValid: (attr) ->
@@ -18,10 +19,7 @@ class OK.Errors
 
   invalid: (attr) ->
     return false unless @errors[attr]
-    _.keys(@errors[attr])
-
-  value: (attr) ->
-    @data[attr]
+    @errors[attr]
 
   each: (attr, callback) ->
     if _.isFunction(attr)

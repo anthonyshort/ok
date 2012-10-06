@@ -3,17 +3,10 @@ describe 'OK', ->
   beforeEach ->
     @ok = new OK
       num:
-        rules:
-          required: true
-          number: true
-          max: 1000
-          min: 1
-        messages:
-          required: 'User ID is required'
-          moment: 'Due date must be a moment instance'
-          number: 'User ID must be a number'
-          max: 'User ID cannot be more than 10 numbers long'
-          min: 'User ID must be at least 3 numbers long'
+        required: true
+        number: true
+        max: 1000
+        min: 1
 
   it 'should return an error object', ->
     errors = @ok.validate foo: 'bar'

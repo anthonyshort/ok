@@ -32,73 +32,73 @@ describe 'OK.Validator', ->
       expect(@validator.url(value)).to.be.false 
 
   it 'should validate alphanumeric', ->
-    for value in ['abc123', 'abc', '123', 'ABC123', null, undefined]
+    for value in ['abc123', 'abc', '123', 'ABC123']
       expect(@validator.alphanumeric(value)).to.be.true
 
-    for value in ['-', '&!$@#*', 'a b c', false] 
+    for value in [ "Anthony's bike", '-', '&!$@#*', 'a b c', false, null, undefined] 
       expect(@validator.alphanumeric(value)).to.be.false
 
   it 'should validate hex', ->
-    for value in ['#111', '#111111', '#fff', '#FFF', null, undefined]
+    for value in ['#111', '#111111', '#fff', '#FFF']
       expect(@validator.hex(value)).to.be.true
 
-    for value in ['#GGG', 'abc', 'fff', '#0000000', false] 
+    for value in ['#GGG', 'abc', 'fff', '#0000000', false, null, undefined] 
       expect(@validator.hex(value)).to.be.false
 
   it 'should validate strings', ->
-    for value in ['string', null, undefined]
+    for value in ['string']
       expect(@validator.string(value)).to.be.true
 
-    for value in [123, false] 
+    for value in [123, false, null, undefined] 
       expect(@validator.string(value)).to.be.false
 
   it 'should validate numbers', ->
-    for value in [123, 1.23, -1, -1.23, '1', '-1', null, undefined]
+    for value in [123, 1.23, -1, -1.23, '1', '-1']
       expect(@validator.number(value)).to.be.true
 
-    for value in ['string', false] 
+    for value in ['string', false, null, undefined] 
       expect(@validator.number(value)).to.be.false
 
   it 'should validate arrays', ->
-    for value in [[], null, undefined] 
+    for value in [[]] 
       expect(@validator.array(value)).to.be.true
 
-    for value in ['string', false, 123] 
+    for value in ['string', false, 123, null, undefined] 
       expect(@validator.array(value)).to.be.false
 
   it 'should validate dates', ->
-    for value in ['1 January 2012', '1/1/2012', new Date, null, undefined] 
+    for value in ['1 January 2012', '1/1/2012', new Date ] 
       expect(@validator.date(value)).to.be.true
 
-    for value in ['string', false] 
+    for value in ['string', false, null, undefined] 
       expect(@validator.date(value)).to.be.false
 
   it 'should validate booleans', ->
-    for value in [true, false, null, undefined] 
+    for value in [true, false ] 
       expect(@validator.boolean(value)).to.be.true
 
-    for value in ['string', 123] 
+    for value in ['string', 123, null, undefined] 
       expect(@validator.boolean(value)).to.be.false
 
   it 'should validate max', ->
     for value in [-1, 0, 1, 2, '-1', '0', '1', '2'] 
       expect(@validator.max(value, 2)).to.be.true
 
-    for value in [2.01, 3] 
+    for value in [2.01, 3, null, undefined] 
       expect(@validator.max(value, 2)).to.be.false
 
   it 'should validate min', ->
     for value in [2, 3, '2', '3'] 
       expect(@validator.min(value, 2)).to.be.true
 
-    for value in [-1, '-1'] 
+    for value in [-1, '-1', null, undefined] 
       expect(@validator.min(value, 2)).to.be.false
 
   it 'should validate length', ->
     for value in ['foo', [1, 2, 3]] 
       expect(@validator.length(value, 3)).to.be.true
 
-    for value in ['foo'] 
+    for value in ['foo', null, undefined] 
       expect(@validator.length(value, 2)).to.be.false
 
   it 'should validate min-length', ->
@@ -139,10 +139,10 @@ describe 'OK.Validator', ->
       expect(@validator.in(value, array)).to.be.false  
 
   it 'should validate pattern', ->
-    for value in ['foo', null, undefined] 
+    for value in ['foo'] 
       expect(@validator.pattern(value, /^foo$/)).to.be.true
 
-    for value in [0, 'bar', false] 
+    for value in [0, 'bar', false, null, undefined] 
       expect(@validator.pattern(value, /^foo$/)).to.be.false  
 
     for value in ['foo'] 
