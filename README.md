@@ -58,7 +58,7 @@ errors.toJSON();
 
 ### With Backbone
 
-``js
+```js
 var Person = Backbone.Model.extend({
   validates: {
     first_name: {
@@ -75,7 +75,7 @@ var Person = Backbone.Model.extend({
     return this.errors.length > 0 ? this.errors : null;
   }
 });
-``
+```
 
 ## Available Rules
 
