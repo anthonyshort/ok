@@ -1,45 +1,90 @@
 # ok.js
 
-Simple object validation
+Simple validation library. It doesn't touch the DOM, it doesn't return messages. It just takes an object and validates it against a set of rules returning an object for working with errors.
+
+I wasn't happy with the validation libraries available for Backbone models. Most are large and try and do too much. Ok was designed to take your models attributes and return a nice error object that your views can use to update your UI. It doesn't attempt to cover ever validation use-case but it provides a simple interface for extending the validation rules available.
+
+## Requirements
+
+* Underscore.js
 
 ## Getting Started
-### On the server
-Install the module with: `npm install ok.js`
 
-```javascript
-var ok_js = require('ok.js');
-ok_js.awesome(); // "awesome"
-```
+### On the server
+Install the module with: `npm install ok`
 
 ### In the browser
 Download the [production version][min] or the [development version][max].
 
-[min]: https://raw.github.com/anthonyshort/ok.js/master/dist/ok.js.min.js
-[max]: https://raw.github.com/anthonyshort/ok.js/master/dist/ok.js.js
+[min]: https://raw.github.com/anthonyshort/ok.js/master/dist/ok.min.js
+[max]: https://raw.github.com/anthonyshort/ok.js/master/dist/ok.js
 
-In your web page:
+## Usage
 
-```html
-<script src="dist/ok.js.min.js"></script>
-<script>
-awesome(); // "awesome"
-</script>
+```javascript
+var validator = new OK({
+  level: {
+    required: true,
+    number: true,
+    min: 1000,
+    max: 9000
+  },
+  due_at: {
+    required: true
+  }
+});
+
+var errors = validator.validate({
+  level: false
+});
+
+errors.length; // 2
+errors.get('level'); // [ 'number' ]
+errors.toJSON(); 
+
+/*
+  {
+    "level": [ 'number' ],
+    "due_at": [ 'required' ]
+  }
+*/
 ```
 
-In your code, you can attach ok.js's methods to any object.
+## Available Rules
 
-```html
-<script>
-this.exports = Bocoup.utils;
-</script>
-<script src="dist/ok.js.min.js"></script>
-<script>
-Bocoup.utils.awesome(); // "awesome"
-</script>
-```
+* required
+* email
+* url
+* alphanumeric
+* hex
+* string
+* number
+* array
+* date
+* boolean
+* max
+* min
+* length
+* minLength
+* maxLength
+* equal
+* range
+* in
+* pattern
 
 ## Documentation
-_(Coming soon)_
+
+### Adding new validation rules
+
+Adding new validation rules is just a matter of adding a new method to the prototype of OK.Validator
+
+```js
+OK.Validator.prototype.creditcard = function(value, options, data){
+  return CreditCard.check(value);
+};
+```
+
+The function will be passed the value, the options for that rules (which is whatever you've defined in your schema) and the object of all the data that is being validated so you can check the value in relation to other values.
 
 ## Examples
 _(Coming soon)_
