@@ -56,6 +56,27 @@ errors.toJSON();
 */
 ```
 
+### With Backbone
+
+``js
+var Person = Backbone.Model.extend({
+  validates: {
+    first_name: {
+      required: true,
+      string: true
+    },
+    last_name: {
+      required: true,
+      string: true
+    }
+  },
+  validate: function(attrs, options) {
+    this.errors = OK.validate(attrs, this.validates);
+    return this.errors.length > 0 ? this.errors : null;
+  }
+});
+``
+
 ## Available Rules
 
 * required
