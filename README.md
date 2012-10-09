@@ -20,8 +20,8 @@ I wasn't happy with the validation libraries available for Backbone models. Most
 
 Download the [production version][min] or the [development version][max].
 
-[min]: https://raw.github.com/anthonyshort/ok.js/master/dist/ok.min.js
-[max]: https://raw.github.com/anthonyshort/ok.js/master/dist/ok.js
+[min]: https://raw.github.com/anthonyshort/ok/master/dist/ok.min.js
+[max]: https://raw.github.com/anthonyshort/ok/master/dist/ok.js
 
 ## Usage
 
