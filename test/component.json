@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "underscore": ">=1.4",
+    "chai": "*",
+    "jquery": "*",
+    "mocha": "*",
+    "backbone": "*"
+  }
+}

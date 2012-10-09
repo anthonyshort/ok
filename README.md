@@ -1,6 +1,6 @@
 # ok.js
 
-Simple validation library. It doesn't touch the DOM, it doesn't return messages. It just takes an object and validates it against a set of rules returning an object for working with errors.
+Simple validation library for Javascript models. It doesn't touch the DOM, it doesn't return messages. It just takes an object and validates it against a set of rules returning an object for working with errors.
 
 I wasn't happy with the validation libraries available for Backbone models. Most are large and try and do too much. Ok was designed to take your models attributes and return a nice error object that your views can use to update your UI. It doesn't attempt to cover every validation use-case but it provides a simple interface for extending the validation rules available.
 
@@ -16,10 +16,6 @@ I wasn't happy with the validation libraries available for Backbone models. Most
 
 ## Getting Started
 
-### On the server
-Install the module with: `npm install ok`
-
-### In the browser
 Download the [production version][min] or the [development version][max].
 
 [min]: https://raw.github.com/anthonyshort/ok.js/master/dist/ok.min.js
@@ -28,7 +24,7 @@ Download the [production version][min] or the [development version][max].
 ## Usage
 
 ```javascript
-var validator = new OK({
+var schema = new OK({
   level: {
     required: true,
     number: true,
@@ -40,7 +36,7 @@ var validator = new OK({
   }
 });
 
-var errors = validator.validate({
+var errors = schema.validate({
   level: false
 });
 
@@ -101,20 +97,50 @@ var Person = Backbone.Model.extend({
 
 ## Documentation
 
+### Schema
+
+The schema is just a simple object with keys that map to attributes. The values are a hash of rules. The key is the validation type and the value will be passed to the validation method in OK.Validator. For example
+
+```js
+var schema = {
+  name: {
+    string: true
+  }
+};
+```
+
+This object can be passed to ``OK.validate(attributes, schema)`` to be used once or you can contruct a new OK instance ``new OK(schema)``
+and reuse the same schema validation across your application.
+
 ### Adding new validation rules
 
 Adding new validation rules is just a matter of adding a new method to the prototype of OK.Validator
 
 ```js
 OK.Validator.prototype.creditcard = function(value, options, data){
-  return CreditCard.check(value);
+  return CreditCard.check(value, options);
 };
 ```
 
-The function will be passed the value, the options for that rules (which is whatever you've defined in your schema) and the object of all the data that is being validated so you can check the value in relation to other values.
+The function will be passed the value, the options for that rule (which is whatever you've defined in your schema) and the object of all the data that is being validated so you can check the value in relation to other values. Here's an example schema using the validation method we just defined:
 
-## Examples
-_(Coming soon)_
+```js
+var schema = {
+  card: {
+    creditcard: {
+      type: 'mastercard'
+    }
+  }
+};
+
+var data = {
+  card: 'foo'
+};
+
+OK.validate(data, schema);
+```
+
+In the validtion method, ``value`` will be ``'foo'``, options will be ``{ type: mastercard }`` and ``data`` will be the object that is passed in to validate.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt](https://github.com/cowboy/grunt).
@@ -122,7 +148,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 _Also, please don't edit files in the "dist" subdirectory as they are generated via grunt. You'll find source code in the "lib" subdirectory!_
 
 ## Release History
-_(Nothing yet)_
+0.1.0 - First release
 
 ## License
 Copyright (c) 2012 Anthony Short  

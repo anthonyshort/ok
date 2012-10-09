@@ -36,10 +36,13 @@ class OK
       else
         if rules.required is true then errors.add attribute, 'required'
 
+    # Prevent the errors object from being modified
+    Object.freeze? errors
+
     # Return the errors object
     errors
 
-if typeof module isnt 'undefined' and module.exports
-  module.exports = _
-else
+if exports?
+  exports.OK = OK
+else 
   @OK = OK

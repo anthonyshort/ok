@@ -21,60 +21,58 @@ class OK.Validator
     method.apply @, args
 
   email: (val) ->
-    @patterns.email.test(val)
+    val? and @patterns.email.test(val)
 
   url: (val) ->
-    @patterns.url.test(val)
+    val? and @patterns.url.test(val)
 
   alphanumeric: (val) ->
-    val isnt false and @patterns.alphanumeric.test(val)
+    val? and _.isString(val) and @patterns.alphanumeric.test(val)
 
   hex: (val) ->
-    not val? or @patterns.hex.test(val)
+    val? and @patterns.hex.test(val)
 
   string: (val) ->
-    not val? or _.isString(val)
+    val? and _.isString(val)
 
   number: (val) ->
-    not val? or not isNaN(parseFloat(val))
+    val? and not isNaN(parseFloat(val))
 
   array: (val) ->
-    not val? or _.isArray(val)
+    val? and _.isArray(val)
 
   date: (val) ->
-    not val? or _.isDate(val) or not isNaN(Date.parse(val)) 
+    val? and ( _.isDate(val) or not isNaN(Date.parse(val)) )
 
   boolean: (val) ->
-    not val? or _.isBoolean(val)
+    val? and _.isBoolean(val)
 
   max: (val, num) ->
-    not val? or val <= num
+    val? and val <= num
 
   min: (val, num) ->
-    not val? or val >= num
+    val? and val >= num
 
   length: (val, length) ->
-    if val? and val.length then val.length is length else false
+    val? and val.length? and val.length is length
 
   minlength: (val, length) ->
-    if val? and val.length then val.length >= length else false
+    val? and val.length? and val.length >= length
 
   maxlength: (val, length) ->
-    if val? and val.length then val.length <= length else false
+    val? and val.length and val.length <= length
 
   equal: (val, other) ->
     _.isEqual(val, other)
 
   range: (val, options) ->
-    options.from <= val <= options.to
+    val? and options.from <= val <= options.to
 
   in: (val, values) ->
     val in values
 
   pattern: (val, pattern) ->
-    return false unless _.isRegExp(pattern)
-    return true unless val? # Allow optional
-    pattern.test(val)
+    _.isRegExp(pattern) and val? and pattern.test(val)
 
   required: (val) ->
     val?

@@ -1,4 +1,4 @@
-/*! ok.js - v0.1.0 - 2012-10-03
+/*! ok.js - v0.1.0 - 2012-10-09
 * https://github.com/anthonyshort/ok.js
 * Copyright (c) 2012 Anthony Short; Licensed MIT */
 
@@ -48,6 +48,9 @@
           }
         }
       }
+      if (typeof Object.freeze === "function") {
+        Object.freeze(errors);
+      }
       return errors;
     };
 
@@ -55,8 +58,8 @@
 
   })();
 
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = _;
+  if (typeof exports !== "undefined" && exports !== null) {
+    exports.OK = OK;
   } else {
     this.OK = OK;
   }
@@ -95,71 +98,59 @@
     };
 
     Validator.prototype.email = function(val) {
-      return this.patterns.email.test(val);
+      return (val != null) && this.patterns.email.test(val);
     };
 
     Validator.prototype.url = function(val) {
-      return this.patterns.url.test(val);
+      return (val != null) && this.patterns.url.test(val);
     };
 
     Validator.prototype.alphanumeric = function(val) {
-      return val !== false && this.patterns.alphanumeric.test(val);
+      return (val != null) && _.isString(val) && this.patterns.alphanumeric.test(val);
     };
 
     Validator.prototype.hex = function(val) {
-      return !(val != null) || this.patterns.hex.test(val);
+      return (val != null) && this.patterns.hex.test(val);
     };
 
     Validator.prototype.string = function(val) {
-      return !(val != null) || _.isString(val);
+      return (val != null) && _.isString(val);
     };
 
     Validator.prototype.number = function(val) {
-      return !(val != null) || !isNaN(parseFloat(val));
+      return (val != null) && !isNaN(parseFloat(val));
     };
 
     Validator.prototype.array = function(val) {
-      return !(val != null) || _.isArray(val);
+      return (val != null) && _.isArray(val);
     };
 
     Validator.prototype.date = function(val) {
-      return !(val != null) || _.isDate(val) || !isNaN(Date.parse(val));
+      return (val != null) && (_.isDate(val) || !isNaN(Date.parse(val)));
     };
 
     Validator.prototype.boolean = function(val) {
-      return !(val != null) || _.isBoolean(val);
+      return (val != null) && _.isBoolean(val);
     };
 
     Validator.prototype.max = function(val, num) {
-      return !(val != null) || val <= num;
+      return (val != null) && val <= num;
     };
 
     Validator.prototype.min = function(val, num) {
-      return !(val != null) || val >= num;
+      return (val != null) && val >= num;
     };
 
     Validator.prototype.length = function(val, length) {
-      if ((val != null) && val.length) {
-        return val.length === length;
-      } else {
-        return false;
-      }
+      return (val != null) && (val.length != null) && val.length === length;
     };
 
     Validator.prototype.minlength = function(val, length) {
-      if ((val != null) && val.length) {
-        return val.length >= length;
-      } else {
-        return false;
-      }
+      return (val != null) && (val.length != null) && val.length >= length;
     };
 
     Validator.prototype.maxlength = function(val, length) {
-      if ((val != null) && val.length) {
-        return val.length <= length;
-      } else {
-        return false;
-      }
+      return (val != null) && val.length && val.length <= length;
     };
 
     Validator.prototype.equal = function(val, other) {
@@ -167,7 +158,7 @@
     };
 
     Validator.prototype.range = function(val, options) {
-      return (options.from <= val && val <= options.to);
+      return (val != null) && (options.from <= val && val <= options.to);
     };
 
     Validator.prototype["in"] = function(val, values) {
@@ -175,13 +166,7 @@
     };
 
     Validator.prototype.pattern = function(val, pattern) {
-      if (!_.isRegExp(pattern)) {
-        return false;
-      }
-      if (val == null) {
-        return true;
-      }
-      return pattern.test(val);
+      return _.isRegExp(pattern) && (val != null) && pattern.test(val);
     };
 
     Validator.prototype.required = function(val) {
