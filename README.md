@@ -77,25 +77,214 @@ var Person = Backbone.Model.extend({
 
 ## Available Rules
 
-* required
-* email
-* url
-* alphanumeric
-* hex
-* string
-* number
-* array
-* date
-* boolean
-* max
-* min
-* length
-* minLength
-* maxLength
-* equal
-* range
-* in
-* pattern
+The built-in rules will example usage.
+
+### required
+
+Accepts a boolean value
+
+```js
+name: {
+  required: true
+}
+```
+
+### email
+
+Basic email check. It's not a complex email regex but it will cover the majority of cases. Accepts ``true`` or ``false``.
+
+```js
+email: {
+  email: true
+}
+```
+
+### url
+
+Basic URL check.  Accepts ``true`` or ``false``.
+
+```js
+blog: {
+  url: true
+}
+```
+
+### alphanumeric
+
+Accepts a string with numbers or letters. A simple ``/^\w+$/`` check. Accepts ``true`` or ``false``.
+
+```js
+username: {
+  alphanumeric: true
+}
+```
+
+### hex
+
+Accepts a hex value with or without the leading hash. Accepts ``true`` or ``false``.
+
+```js
+color: {
+  hex: true
+}
+```
+
+### string
+
+Check if a value is a string using underscores ``_.isString`` method. Accepts ``true`` or ``false``.
+
+```js
+title: {
+  string: true
+}
+```
+
+### number
+
+Check if a value is a number. Strings that return a number with ``parseFloat`` will pass. Accepts ``true`` or ``false``.
+
+```js
+user_id: {
+  number: true
+}
+```
+
+### array
+
+Check if a value is a string using underscores ``_.isArray`` method. Accepts ``true`` or ``false``.
+
+```js
+entries: {
+  array: true
+}
+```
+
+### date
+
+Simple date checking using ``Date.parse`` or ``_.isDate``. Accepts ``true`` or ``false``.
+
+```js
+due_at: {
+  date: true
+}
+```
+
+### boolean
+
+Check if a value is a string using underscores ``_.isBoolean`` method. Accepts ``true`` or ``false``.
+
+```js
+terms: {
+  boolean: true
+}
+```
+
+### max
+
+Limit a number to a max value.
+
+```js
+size: {
+  max: 1000
+}
+```
+
+### min
+
+Limit a number to a min value.
+
+```js
+size: {
+  min: 1
+}
+```
+
+### length
+
+Check the length property of an object.
+
+```js
+account_id: {
+  length: 14
+}
+```
+
+### minlength
+
+Check the length property of an object.
+
+```js
+account_id: {
+  minlength: 14
+}
+```
+
+### maxlength
+
+Check the length property of an object.
+
+```js
+account_id: {
+  maxlength: 14
+}
+```
+
+### equal
+
+Check the value equals the other object using ``_.isEqual``.
+
+```js
+equal: {
+  secret: 'nyan'
+}
+```
+
+### range
+
+Check that the number is within a range. Takes an object with a ``from`` and ``to`` value.
+
+```js
+level: {
+  range: {
+    from: 0,
+    to: 3
+  }
+}
+```
+
+### in
+
+Checks to see if the value is any value in an array.
+
+```js
+level: {
+  in: [0, 1, 3]
+}
+```
+
+### pattern
+
+Tests the value against the regex object.
+
+```js
+name: {
+  pattern: /^foo/
+}
+```
+
+## Custom Rules
+
+You can define a custom validator within your schema by passing a function as the value for a rule. For example:
+
+```js
+var schema = {
+  password: function(value, data) {
+    return value === data.password_confirm;
+  }
+};
+```
+
+The function is passed the value being checked and the whole object of data being checked so you can do comparisons on other attributes.
 
 ## Documentation
 
