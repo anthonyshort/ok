@@ -303,6 +303,27 @@ var schema = {
 This object can be passed to ``OK.validate(attributes, schema)`` to be used once or you can contruct a new OK instance ``new OK(schema)``
 and reuse the same schema validation across your application.
 
+### OK.Error object
+
+Whenever you validate you are returned an OK.Error object. This is a simple interface for working with the errors.
+
+#### ``isValid(attr)``
+
+Check if an attribute that was passed in was valid.
+
+#### ``get(attr)``
+
+Returns the errors object for an attribute or false if there is no errors for that attribute
+
+#### ``each(attr, callback)``
+
+Loop through the errors for an attribute and call the callback. If the ``attr`` param is omitted and a function is passed in as the
+only parameter it will loop through the errors object itself so you can check each of the attributes.
+
+#### ``toJSON``
+
+Similar the implementation in Backbone. Returns an object of errors that can be used as JSON.
+
 ### Adding new validation rules
 
 Adding new validation rules is just a matter of adding a new method to the prototype of OK.Validator
