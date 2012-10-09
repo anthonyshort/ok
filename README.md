@@ -1,5 +1,7 @@
 # ok.js
 
+[![Build Status](https://secure.travis-ci.org/anthonyshort/ok.png)](http://travis-ci.org/anthonyshort/ok)
+
 Simple validation library for Javascript models. It doesn't touch the DOM, it doesn't return messages. It just takes an object and validates it against a set of rules returning an object for working with errors.
 
 I wasn't happy with the validation libraries available for Backbone models. Most are large and try and do too much. Ok was designed to take your models attributes and return a nice error object that your views can use to update your UI. It doesn't attempt to cover every validation use-case but it provides a simple interface for extending the validation rules available.
