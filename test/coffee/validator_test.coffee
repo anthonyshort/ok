@@ -20,91 +20,82 @@ describe 'OK.Validator', ->
   it 'should validate an email', ->
     for email in ['foo@bar.com', 'foo@bar.co.uk']
       expect(@validator.email(email)).to.be.true 
+      expect(@validator.email(email, false)).to.be.false 
     
     for email in ['@bar.com', 'foo@bar', 'foo', null, false, undefined] 
       expect(@validator.email(email)).to.be.false 
-
-    for email in ['@bar.com', 'foo@bar', 'foo', null, false, undefined] 
       expect(@validator.email(email, false)).to.be.true 
 
   it 'should validate a url', ->
     for url in ['http://google.com', 'google.com', 'google.co.uk', 'www.google.com', 'http://www.google.com']
       expect(@validator.url(url)).to.be.true
+      expect(@validator.url(url, false)).to.be.false
 
     for value in ['google', 'htp://google.com', null, false, 'foo@bar.co.uk', 'google .com'] 
       expect(@validator.url(value)).to.be.false 
-
-    for value in ['google', 'htp://google.com', null, false, 'foo@bar.co.uk', 'google .com'] 
       expect(@validator.url(value, false)).to.be.true 
 
   it 'should validate alphanumeric', ->
     for value in ['abc123', 'abc', '123', 'ABC123']
       expect(@validator.alphanumeric(value)).to.be.true
+      expect(@validator.alphanumeric(value, false)).to.be.false
 
     for value in [ "Anthony's bike", '-', '&!$@#*', 'a b c', false, null, undefined] 
       expect(@validator.alphanumeric(value)).to.be.false
-
-    for value in [ "Anthony's bike", '-', '&!$@#*', 'a b c', false, null, undefined] 
       expect(@validator.alphanumeric(value, false)).to.be.true
 
   it 'should validate hex', ->
     for value in ['#111', '#111111', '#fff', '#FFF']
       expect(@validator.hex(value)).to.be.true
+      expect(@validator.hex(value, false)).to.be.false
 
     for value in ['#GGG', 'abc', 'fff', '#0000000', false, null, undefined] 
       expect(@validator.hex(value)).to.be.false
-
-    for value in ['#GGG', 'abc', 'fff', '#0000000', false, null, undefined] 
       expect(@validator.hex(value, false)).to.be.true
 
   it 'should validate strings', ->
     for value in ['string']
       expect(@validator.string(value)).to.be.true
+      expect(@validator.string(value, false)).to.be.false
 
     for value in [123, false, null, undefined] 
       expect(@validator.string(value)).to.be.false
-
-    for value in [123, false, null, undefined] 
       expect(@validator.string(value, false)).to.be.true
 
   it 'should validate numbers', ->
     for value in [123, 1.23, -1, -1.23, '1', '-1']
       expect(@validator.number(value)).to.be.true
+      expect(@validator.number(value, false)).to.be.false
 
     for value in ['string', false, null, undefined] 
       expect(@validator.number(value)).to.be.false
-
-    for value in ['string', false, null, undefined] 
       expect(@validator.number(value, false)).to.be.true
 
   it 'should validate arrays', ->
     for value in [[]] 
       expect(@validator.array(value)).to.be.true
+      expect(@validator.array(value, false)).to.be.false
 
     for value in ['string', false, 123, null, undefined] 
       expect(@validator.array(value)).to.be.false
-
-    for value in ['string', false, 123, null, undefined] 
       expect(@validator.array(value, false)).to.be.true
 
   it 'should validate dates', ->
     for value in ['1 January 2012', '1/1/2012', new Date ] 
       expect(@validator.date(value)).to.be.true
+      expect(@validator.date(value, false)).to.be.false
 
     for value in ['string', false, null, undefined] 
       expect(@validator.date(value)).to.be.false
-
-    for value in ['string', false, null, undefined] 
       expect(@validator.date(value, false)).to.be.true
 
   it 'should validate booleans', ->
-    for value in [true, false ] 
+    for value in [ true, false ] 
       expect(@validator.boolean(value)).to.be.true
+      expect(@validator.boolean(value, false)).to.be.false
 
     for value in ['string', 123, null, undefined] 
       expect(@validator.boolean(value)).to.be.false
-
-    for value in ['string', 123, null, undefined] 
       expect(@validator.boolean(value, false)).to.be.true
 
   it 'should validate max', ->
