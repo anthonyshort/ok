@@ -307,6 +307,17 @@ and reuse the same schema validation across your application.
 
 Whenever you validate you are returned an OK.Error object. This is a simple interface for working with the errors.
 
+#### ``length``
+
+The total number of errors for all attributes. This is the easiest way to check if there are any errors.
+
+```js
+var errors = OK.validate(attrs, schema);
+if( errors.length > 0 ) {
+  // Update view
+}
+```
+
 #### ``isValid(attr)``
 
 Check if an attribute that was passed in was valid.
