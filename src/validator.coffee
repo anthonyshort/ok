@@ -20,32 +20,32 @@ class OK.Validator
     # Call the method on the validator that will always return a boolean
     method.apply @, args
 
-  email: (val) ->
-    val? and @patterns.email.test(val)
+  email: (val, bool = true) ->
+    (_.isString(val) and @patterns.email.test(val)) is bool
 
-  url: (val) ->
-    val? and @patterns.url.test(val)
+  url: (val, bool = true) ->
+    (val? and @patterns.url.test(val)) is bool
 
-  alphanumeric: (val) ->
-    val? and _.isString(val) and @patterns.alphanumeric.test(val)
+  alphanumeric: (val, bool = true) ->
+    (val? and _.isString(val) and @patterns.alphanumeric.test(val)) is bool
 
-  hex: (val) ->
-    val? and @patterns.hex.test(val)
+  hex: (val, bool = true) ->
+    (val? and @patterns.hex.test(val)) is bool
 
-  string: (val) ->
-    val? and _.isString(val)
+  string: (val, bool = true) ->
+    (val? and _.isString(val)) is bool
 
-  number: (val) ->
-    val? and not isNaN(parseFloat(val))
+  number: (val, bool = true) ->
+    (val? and not isNaN(parseFloat(val))) is bool
 
-  array: (val) ->
-    val? and _.isArray(val)
+  array: (val, bool = true) ->
+    (val? and _.isArray(val)) is bool
 
-  date: (val) ->
-    val? and ( _.isDate(val) or not isNaN(Date.parse(val)) )
+  date: (val, bool = true) ->
+    (val? and ( _.isDate(val) or not isNaN(Date.parse(val)) )) is bool
 
-  boolean: (val) ->
-    val? and _.isBoolean(val)
+  boolean: (val, bool = true) ->
+    (val? and _.isBoolean(val)) is bool
 
   max: (val, num) ->
     val? and val <= num
@@ -74,5 +74,5 @@ class OK.Validator
   pattern: (val, pattern) ->
     _.isRegExp(pattern) and val? and pattern.test(val)
 
-  required: (val) ->
-    val?
+  required: (val, bool = true) ->
+    val? is bool

@@ -97,40 +97,67 @@
       return method.apply(this, args);
     };
 
-    Validator.prototype.email = function(val) {
-      return (val != null) && this.patterns.email.test(val);
+    Validator.prototype.email = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return (_.isString(val) && this.patterns.email.test(val)) === bool;
     };
 
-    Validator.prototype.url = function(val) {
-      return (val != null) && this.patterns.url.test(val);
+    Validator.prototype.url = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && this.patterns.url.test(val)) === bool;
     };
 
-    Validator.prototype.alphanumeric = function(val) {
-      return (val != null) && _.isString(val) && this.patterns.alphanumeric.test(val);
+    Validator.prototype.alphanumeric = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && _.isString(val) && this.patterns.alphanumeric.test(val)) === bool;
     };
 
-    Validator.prototype.hex = function(val) {
-      return (val != null) && this.patterns.hex.test(val);
+    Validator.prototype.hex = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && this.patterns.hex.test(val)) === bool;
     };
 
-    Validator.prototype.string = function(val) {
-      return (val != null) && _.isString(val);
+    Validator.prototype.string = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && _.isString(val)) === bool;
     };
 
-    Validator.prototype.number = function(val) {
-      return (val != null) && !isNaN(parseFloat(val));
+    Validator.prototype.number = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && !isNaN(parseFloat(val))) === bool;
     };
 
-    Validator.prototype.array = function(val) {
-      return (val != null) && _.isArray(val);
+    Validator.prototype.array = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && _.isArray(val)) === bool;
     };
 
-    Validator.prototype.date = function(val) {
-      return (val != null) && (_.isDate(val) || !isNaN(Date.parse(val)));
+    Validator.prototype.date = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && (_.isDate(val) || !isNaN(Date.parse(val)))) === bool;
     };
 
-    Validator.prototype.boolean = function(val) {
-      return (val != null) && _.isBoolean(val);
+    Validator.prototype.boolean = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return ((val != null) && _.isBoolean(val)) === bool;
     };
 
     Validator.prototype.max = function(val, num) {
@@ -169,8 +196,11 @@
       return _.isRegExp(pattern) && (val != null) && pattern.test(val);
     };
 
-    Validator.prototype.required = function(val) {
-      return val != null;
+    Validator.prototype.required = function(val, bool) {
+      if (bool == null) {
+        bool = true;
+      }
+      return (val != null) === bool;
     };
 
     return Validator;
