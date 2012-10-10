@@ -1,8 +1,8 @@
 {
-  "name": "ok.js",
+  "name": "ok",
   "description": "Simple object validation",
   "version": "0.1.2",
-  "homepage": "https://github.com/anthonyshort/ok.js",
+  "homepage": "https://github.com/anthonyshort/ok",
   "author": {
     "name": "Anthony Short",
     "email": "antshort@gmail.com",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/anthonyshort/ok.js.git"
+    "url": "git://github.com/anthonyshort/ok.git"
   },
   "bugs": {
-    "url": "https://github.com/anthonyshort/ok.js/issues"
+    "url": "https://github.com/anthonyshort/ok/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/anthonyshort/ok.js/blob/master/LICENSE-MIT"
+      "url": "https://github.com/anthonyshort/ok/blob/master/LICENSE-MIT"
     }
   ],
   "main": "dist/ok.js",
