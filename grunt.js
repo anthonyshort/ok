@@ -18,13 +18,13 @@ module.exports = function(grunt) {
           'lib/validator.js',
           'lib/errors.js'
         ],
-        dest: 'dist/ok.js'
+        dest: 'ok.js'
       }
     },
     min: {
       dist: {
         src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'dist/ok.min.js'
+        dest: 'ok.min.js'
       }
     },
     test: {

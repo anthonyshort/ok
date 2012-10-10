@@ -1,7 +1,7 @@
 {
   "name": "ok",
   "version": "0.1.2",
-  "main": "./dist/ok.js",
+  "main": "./ok.js",
   "dependencies": {
     "underscore": ">=1.4"
   }
