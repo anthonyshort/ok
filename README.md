@@ -27,31 +27,34 @@ Download the [production version][min] or the [development version][max].
 
 ```javascript
 var schema = new OK({
-  level: {
+  first_name: {
     required: true,
-    number: true,
-    min: 1000,
-    max: 9000
+    string: true
   },
-  due_at: {
-    required: true
+  last_name: {
+    required: true,
+    string: true
+  },
+  birthday: {
+    date: true
   }
 });
 
 var errors = schema.validate({
-  level: false
+  first_name: "Naruto",
+  birthday: '4 Jan 1988'
 });
 
-errors.length; // 2
-errors.get('level'); // [ 'number' ]
-errors.toJSON(); 
+// Any errors?
+if( errors.length === 0 ) {
+  return "Hooray!";
+}
 
-/*
-  {
-    "level": [ 'number' ],
-    "due_at": [ 'required' ]
-  }
-*/
+// Loop through all of the errors easily
+errors.each(function(list, attr){
+  // list is an array of rules that didn't validate from the schema
+  // attr is the attribute that failed
+});
 ```
 
 ### With Backbone
