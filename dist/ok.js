@@ -1,4 +1,4 @@
-/*! ok.js - v0.1.0 - 2012-10-09
+/*! ok.js - v0.1.0 - 2012-10-10
 * https://github.com/anthonyshort/ok.js
 * Copyright (c) 2012 Anthony Short; Licensed MIT */
 
