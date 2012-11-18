@@ -1,8 +1,17 @@
 {
   "name": "ok",
-  "version": "0.1.2",
-  "main": "./ok.js",
+  "repo": "anthonyshort/ok",
+  "description": "Validate objects against a set of rules",
+  "version": "0.0.1",
+  "keywords": [],
   "dependencies": {
-    "underscore": ">=1.4"
-  }
+    "component/each": "*",
+    "anthonyshort/validates": "*"
+  },
+  "development": {},
+  "license": "MIT",
+  "scripts": [
+    "index.js",
+    "lib/errors.js"
+  ]
 }

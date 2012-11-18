@@ -2,40 +2,18 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
-    pkg: '<json:package.json>',
-    meta: {
-      banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-        ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
-    },
-    concat: {
-      dist: {
-        src: [
-          '<banner:meta.banner>',
-          'lib/ok.js',
-          'lib/validator.js',
-          'lib/errors.js'
-        ],
-        dest: 'ok.js'
-      }
-    },
     min: {
       dist: {
-        src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
+        src: 'ok.js',
         dest: 'ok.min.js'
       }
     },
-    test: {
-      files: ['test/**/*.js']
-    },
     lint: {
-      files: ['grunt.js', 'lib/**/*.js', 'test/**/*.js']
+      files: ['grunt.js', 'index.js', 'lib/**/*.js', 'test/**/*.js']
     },
     watch: {
-      files: ['grunt.js', 'src/**/*.coffee', 'test/**/*.coffee'],
-      tasks: 'coffee concat test'
+      files: ['grunt.js', 'index.js', 'lib/**/*.js', 'test/**/*.coffee'],
+      tasks: 'test'
     },
     jshint: {
       options: {
@@ -56,16 +34,9 @@ module.exports = function(grunt) {
       }
     },
     coffee: {
-      app: {
-        src: ['src/*.coffee'],
-        dest: 'lib',
-        options: {
-          bare: false
-        }
-      },
       test: {
-        src: ['test/coffee/*.coffee'],
-        dest: 'test/specs',
+        src: ['test/src/*.coffee'],
+        dest: 'test/specs/*.js',
         options: {
           bare: true
         }
@@ -74,13 +45,28 @@ module.exports = function(grunt) {
     mocha: {
       index: ['test/index.html']
     },
-    uglify: {}
+    shell: {
+      install: {
+        command: "component install -f"
+      },
+      build: {
+        command: "component build -o ./ -s ok -n ok"
+      }
+    },
+    clean: {
+      publish: ['build', 'ok.css']
+    }
   });
 
-  // Default task.
-  grunt.registerTask('default', 'coffee concat min mocha');
-  grunt.registerTask('test', 'coffee mocha');
+  grunt.registerTask('test', 'build coffee mocha');
+  grunt.registerTask('install', 'shell:install');
+  grunt.registerTask('build', 'shell:build clean');
+  grunt.registerTask('publish', 'build min');
+
+  grunt.registerTask('default', 'install build test publish clean');
+
   grunt.loadNpmTasks('grunt-coffee');
   grunt.loadNpmTasks('grunt-mocha');
-
+  grunt.loadNpmTasks('grunt-contrib');
+  grunt.loadNpmTasks('grunt-shell');
 };

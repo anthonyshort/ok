@@ -21,19 +21,21 @@
       "url": "https://github.com/anthonyshort/ok/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "dist/ok.js",
+  "main": "ok.js",
   "engines": {
     "node": "*"
   },
   "scripts": {
     "test": "grunt test",
-    "postinstall": "bower install & grunt"
+    "postinstall": "component install -f & grunt"
   },
   "devDependencies": {
-    "bower": "*",
+    "component": "*",
     "grunt": "~0.3.15",
     "grunt-coffee": "*",
-    "grunt-mocha": "*"
+    "grunt-mocha": "*",
+    "grunt-shell": "*",
+    "grunt-contrib": "*"
   },
   "keywords": []
 }

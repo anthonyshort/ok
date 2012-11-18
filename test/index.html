@@ -3,28 +3,20 @@
   <meta charset="utf-8">
   <title>Mocha Tests</title>
   <link rel="stylesheet" href="../components/mocha/mocha.css" />
-  <script src="components/jquery/jquery.js"></script>
-  <script src="components/underscore/underscore.js"></script>
   <script src="components/mocha/mocha.js"></script>
   <script src="components/chai/chai.js"></script>
-  <script src="components/backbone/backbone.js"></script>
   <script src="mocha-helper.js"></script>
   <script src="../ok.js"></script>
   <script>
     mocha.setup('bdd');
     window.expect = chai.expect;
   </script>
-  <script src="specs/validator_test.js"></script>
-  <script src="specs/errors_test.js"></script>
-  <script src="specs/ok_test.js"></script>
-  <script src="specs/backbone_test.js"></script>
-  <script>
-    $(function() {
-      mocha.run();
-    });
-  </script>
+  <script src="specs/ok.js"></script>
 </head>
 <body>
   <div id="mocha"></div>
+  <script>
+    mocha.run();
+  </script>
 </body>
 </html>

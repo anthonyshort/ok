@@ -1,262 +1,651 @@
-/*! ok.js - v0.1.2 - 2012-10-10
-* https://github.com/anthonyshort/ok.js
-* Copyright (c) 2012 Anthony Short; Licensed MIT */
+;(function(){
+/**
+ * Require the given path.
+ *
+ * @param {String} path
+ * @return {Object} exports
+ * @api public
+ */
 
-(function() {
-  var OK,
-    __hasProp = {}.hasOwnProperty;
+function require(p, parent, orig){
+  var path = require.resolve(p)
+    , mod = require.modules[path];
 
-  OK = (function() {
-
-    OK.validate = function(attributes, schema) {
-      var validator;
-      validator = new this(schema);
-      return validator.validate(attributes);
-    };
-
-    function OK(schema) {
-      this.schema = schema;
-    }
-
-    OK.prototype.validate = function(attributes) {
-      var attribute, errors, ruleValue, rules, type, valid, validator, value, _ref;
-      errors = new OK.Errors;
-      _ref = this.schema;
-      for (attribute in _ref) {
-        if (!__hasProp.call(_ref, attribute)) continue;
-        rules = _ref[attribute];
-        value = attributes[attribute];
-        if (value != null) {
-          for (type in rules) {
-            ruleValue = rules[type];
-            if (typeof ruleValue === 'function') {
-              valid = ruleValue.call(this, value, attributes);
-              if (!valid) {
-                errors.add(attribute, type);
-              }
-            } else {
-              validator = new OK.Validator;
-              valid = validator.check(type, value, ruleValue, attributes);
-              if (!valid) {
-                errors.add(attribute, type);
-              }
-            }
-          }
-        } else {
-          if (rules.required === true) {
-            errors.add(attribute, 'required');
-          }
-        }
-      }
-      if (typeof Object.freeze === "function") {
-        Object.freeze(errors);
-      }
-      return errors;
-    };
-
-    return OK;
-
-  })();
-
-  if (typeof exports !== "undefined" && exports !== null) {
-    exports.OK = OK;
-  } else {
-    this.OK = OK;
+  // lookup failed
+  if (null == path) {
+    orig = orig || p;
+    parent = parent || 'root';
+    throw new Error('failed to require "' + orig + '" from "' + parent + '"');
   }
 
-}).call(this);
+  // perform real require()
+  // by invoking the module's
+  // registered function
+  if (!mod.exports) {
+    mod.exports = {};
+    mod.client = mod.component = true;
+    mod.call(this, mod, mod.exports, require.relative(path));
+  }
 
-(function() {
-  var __slice = [].slice,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  return mod.exports;
+}
 
-  OK.Validator = (function() {
+/**
+ * Registered modules.
+ */
 
-    function Validator() {}
+require.modules = {};
 
-    Validator.prototype.patterns = {
-      email: /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/,
-      url: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
-      alphanumeric: /^\w+$/,
-      hex: /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/
-    };
+/**
+ * Registered aliases.
+ */
 
-    Validator.check = function() {
-      var validator;
-      validator = new this;
-      return validator.check.apply(validator, arguments);
-    };
+require.aliases = {};
 
-    Validator.prototype.check = function() {
-      var args, method, type;
-      type = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      method = this[type];
-      if (!method) {
-        throw new Error("Invalid validation type " + type);
-      }
-      return method.apply(this, args);
-    };
+/**
+ * Resolve `path`.
+ *
+ * Lookup:
+ *
+ *   - PATH/index.js
+ *   - PATH.js
+ *   - PATH
+ *
+ * @param {String} path
+ * @return {String} path or null
+ * @api private
+ */
 
-    Validator.prototype.email = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return (_.isString(val) && this.patterns.email.test(val)) === bool;
-    };
+require.resolve = function(path){
+  var orig = path
+    , reg = path + '.js'
+    , regJSON = path + '.json'
+    , index = path + '/index.js'
+    , indexJSON = path + '/index.json';
 
-    Validator.prototype.url = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && this.patterns.url.test(val)) === bool;
-    };
+  return require.modules[reg] && reg
+    || require.modules[regJSON] && regJSON
+    || require.modules[index] && index
+    || require.modules[indexJSON] && indexJSON
+    || require.modules[orig] && orig
+    || require.aliases[index];
+};
 
-    Validator.prototype.alphanumeric = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && _.isString(val) && this.patterns.alphanumeric.test(val)) === bool;
-    };
+/**
+ * Normalize `path` relative to the current path.
+ *
+ * @param {String} curr
+ * @param {String} path
+ * @return {String}
+ * @api private
+ */
 
-    Validator.prototype.hex = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && this.patterns.hex.test(val)) === bool;
-    };
+require.normalize = function(curr, path) {
+  var segs = [];
 
-    Validator.prototype.string = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && _.isString(val)) === bool;
-    };
+  if ('.' != path.charAt(0)) return path;
 
-    Validator.prototype.number = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && !isNaN(parseFloat(val))) === bool;
-    };
+  curr = curr.split('/');
+  path = path.split('/');
 
-    Validator.prototype.array = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && _.isArray(val)) === bool;
-    };
+  for (var i = 0; i < path.length; ++i) {
+    if ('..' == path[i]) {
+      curr.pop();
+    } else if ('.' != path[i] && '' != path[i]) {
+      segs.push(path[i]);
+    }
+  }
 
-    Validator.prototype.date = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && (_.isDate(val) || !isNaN(Date.parse(val)))) === bool;
-    };
+  return curr.concat(segs).join('/');
+};
 
-    Validator.prototype.boolean = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return ((val != null) && _.isBoolean(val)) === bool;
-    };
+/**
+ * Register module at `path` with callback `fn`.
+ *
+ * @param {String} path
+ * @param {Function} fn
+ * @api private
+ */
 
-    Validator.prototype.max = function(val, num) {
-      return (val != null) && val <= num;
-    };
+require.register = function(path, fn){
+  require.modules[path] = fn;
+};
 
-    Validator.prototype.min = function(val, num) {
-      return (val != null) && val >= num;
-    };
+/**
+ * Alias a module definition.
+ *
+ * @param {String} from
+ * @param {String} to
+ * @api private
+ */
 
-    Validator.prototype.length = function(val, length) {
-      return (val != null) && (val.length != null) && val.length === length;
-    };
+require.alias = function(from, to){
+  var fn = require.modules[from];
+  if (!fn) throw new Error('failed to alias "' + from + '", it does not exist');
+  require.aliases[to] = from;
+};
 
-    Validator.prototype.minlength = function(val, length) {
-      return (val != null) && (val.length != null) && val.length >= length;
-    };
+/**
+ * Return a require function relative to the `parent` path.
+ *
+ * @param {String} parent
+ * @return {Function}
+ * @api private
+ */
 
-    Validator.prototype.maxlength = function(val, length) {
-      return (val != null) && val.length && val.length <= length;
-    };
+require.relative = function(parent) {
+  var p = require.normalize(parent, '..');
 
-    Validator.prototype.equal = function(val, other) {
-      return _.isEqual(val, other);
-    };
+  /**
+   * lastIndexOf helper.
+   */
 
-    Validator.prototype.range = function(val, options) {
-      return (val != null) && (options.from <= val && val <= options.to);
-    };
+  function lastIndexOf(arr, obj){
+    var i = arr.length;
+    while (i--) {
+      if (arr[i] === obj) return i;
+    }
+    return -1;
+  }
 
-    Validator.prototype["in"] = function(val, values) {
-      return __indexOf.call(values, val) >= 0;
-    };
+  /**
+   * The relative require() itself.
+   */
 
-    Validator.prototype.pattern = function(val, pattern) {
-      return _.isRegExp(pattern) && (val != null) && pattern.test(val);
-    };
+  function fn(path){
+    var orig = path;
+    path = fn.resolve(path);
+    return require(path, parent, orig);
+  }
 
-    Validator.prototype.required = function(val, bool) {
-      if (bool == null) {
-        bool = true;
-      }
-      return (val != null) === bool;
-    };
+  /**
+   * Resolve relative to the parent.
+   */
 
-    return Validator;
+  fn.resolve = function(path){
+    // resolve deps by returning
+    // the dep in the nearest "deps"
+    // directory
+    if ('.' != path.charAt(0)) {
+      var segs = parent.split('/');
+      var i = lastIndexOf(segs, 'deps') + 1;
+      if (!i) i = 0;
+      path = segs.slice(0, i + 1).join('/') + '/deps/' + path;
+      return path;
+    }
+    return require.normalize(p, path);
+  };
 
-  })();
+  /**
+   * Check if module is defined at `path`.
+   */
 
-}).call(this);
+  fn.exists = function(path){
+    return !! require.modules[fn.resolve(path)];
+  };
 
-(function() {
+  return fn;
+};require.register("component-type/index.js", function(module, exports, require){
 
-  OK.Errors = (function() {
+/**
+ * toString ref.
+ */
 
-    function Errors() {
-      this.errors = {};
-      this.length = 0;
+var toString = Object.prototype.toString;
+
+/**
+ * Return the type of `val`.
+ *
+ * @param {Mixed} val
+ * @return {String}
+ * @api public
+ */
+
+module.exports = function(val){
+  switch (toString.call(val)) {
+    case '[object Function]': return 'function';
+    case '[object Date]': return 'date';
+    case '[object RegExp]': return 'regexp';
+    case '[object Arguments]': return 'arguments';
+    case '[object Array]': return 'array';
+  }
+
+  if (val === null) return 'null';
+  if (val === undefined) return 'undefined';
+  if (val === Object(val)) return 'object';
+
+  return typeof val;
+};
+
+});
+require.register("component-each/index.js", function(module, exports, require){
+
+/**
+ * Module dependencies.
+ */
+
+var type = require('type');
+
+/**
+ * HOP reference.
+ */
+
+var has = Object.prototype.hasOwnProperty;
+
+/**
+ * Iterate the given `obj` and invoke `fn(val, i)`.
+ *
+ * @param {String|Array|Object} obj
+ * @param {Function} fn
+ * @api public
+ */
+
+module.exports = function(obj, fn){
+  switch (type(obj)) {
+    case 'array':
+      return array(obj, fn);
+    case 'object':
+      if ('number' == typeof obj.length) return array(obj, fn);
+      return object(obj, fn);
+    case 'string':
+      return string(obj, fn);
+  }
+};
+
+/**
+ * Iterate string chars.
+ *
+ * @param {String} obj
+ * @param {Function} fn
+ * @api private
+ */
+
+function string(obj, fn) {
+  for (var i = 0; i < obj.length; ++i) {
+    fn(obj.charAt(i), i);
+  }
+}
+
+/**
+ * Iterate object keys.
+ *
+ * @param {Object} obj
+ * @param {Function} fn
+ * @api private
+ */
+
+function object(obj, fn) {
+  for (var key in obj) {
+    if (has.call(obj, key)) {
+      fn(key, obj[key]);
+    }
+  }
+}
+
+/**
+ * Iterate array-ish.
+ *
+ * @param {Array|Object} obj
+ * @param {Function} fn
+ * @api private
+ */
+
+function array(obj, fn) {
+  for (var i = 0; i < obj.length; ++i) {
+    fn(obj[i], i);
+  }
+}
+});
+require.register("component-indexof/index.js", function(module, exports, require){
+
+var indexOf = [].indexOf;
+
+module.exports = function(arr, obj){
+  if (indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+});
+require.register("anthonyshort-validates/index.js", function(module, exports, require){
+var each = require('each');
+var indexof = require('indexof');
+var toString = Object.prototype.toString;
+var is = {};
+
+// Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp.
+// Borrowed from Underscore.js
+each(['Function', 'String', 'Number', 'Date', 'Array'], function(name) {
+  is[name.toLowerCase()] = function(obj) {
+    return toString.call(obj) == '[object ' + name + ']';
+  };
+});
+
+var patterns = {
+  email: /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/,
+  url: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+  alphanumeric: /^\w+$/,
+  hex: /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/
+};
+
+/**
+ * Check if a string is an email address
+ * @param  {String}   val 
+ * @return {Boolean}
+ */
+exports.email = function(val) {
+  return val != null && is.string(val) && patterns.email.test(val);
+};
+
+/**
+ * Check if a string is a valid URL
+ * @param  {String} val  
+ * @return {Boolean}
+ */
+exports.url = function(val) {
+  return val != null && patterns.url.test(val);
+};
+
+/**
+ * Check if a string is alphanumeric
+ * @param  {String} val 
+ * @return {Boolean}
+ */
+exports.alphanumeric = function(val) {
+  return val != null && is.string(val) && patterns.alphanumeric.test(val);
+};
+
+/**
+ * Check if a string is hexidecimal
+ * @param  {String} val  
+ * @return {Boolean}
+ */
+exports.hex = function(val) {
+  return val != null && patterns.hex.test(val);
+};
+
+/**
+ * Check if the value is a string
+ * @param  val 
+ * @return {Boolean}
+ */
+exports.string = function(val) {
+  return val != null && is.string(val);
+};
+
+/**
+ * Check if a value is number. Converts value to a number
+ * and checks to see if it is a valid number
+ * @param  {String} val
+ * @return {Boolean}
+ */
+exports.number = function(val) {
+  return val != null && ( is.number(val) || !isNaN(parseFloat(val)) );
+};
+
+/**
+ * Check if a value is an array
+ * @param  {Any} val
+ * @return {Boolean}
+ */
+exports.array = function(val) {
+  return val != null && is.array(val);
+};
+
+/**
+ * Check if passed in value is, or can be converted
+ * to, a valid date
+ * @param  {Any} val
+ * @return {Boolean}
+ */
+exports.date = function(val) {
+  return val != null && ( is.date(val) || !isNaN(Date.parse(val)) );
+};
+
+/**
+ * Check if the value is a valid boolean
+ * @param  {Any} val
+ * @return {Boolean}
+ */
+exports.boolean = function(val) {
+  return val === true || val === false;
+};
+
+/**
+ * Check if a number is below a value
+ * @param  {String|Number} val
+ * @param  {Number} num Maximum value
+ * @return {Boolean}
+ */
+exports.max = function(val, num) {
+  return val != null && val <= num;
+};
+
+/**
+ * Check if a number is a at least num
+ * @param  {String|Number} val
+ * @param  {Number} num
+ * @return {Boolean}
+ */
+exports.min = function(val, num) {
+  return (val != null) && val >= num;
+};
+
+/**
+ * Check the length of the value
+ * @param  {String|Array} val
+ * @param  {Number} length
+ * @return {Boolean}
+ */
+exports.length = function(val, length) {
+  return val != null && val.length && val.length === length;
+};
+
+/**
+ * Check the minimum length of a number or string
+ * @param  {String|Array} val
+ * @param  {Number} length
+ * @return {Boolean}
+ */
+exports.minlength = function(val, length) {
+  return val != null && val.length != null && val.length >= length;
+};
+
+/**
+ * Check the minimum length
+ * @param  {String|Array} val
+ * @param  {Number} length
+ * @return {Boolean}
+ */
+exports.maxlength = function(val, length) {
+  return val != null && val.length != null && val.length <= length;
+};
+
+/**
+ * Check if a value is within a range
+ * @param  {String|Number} val
+ * @param  {Object} options Requires a from and to
+ * @return {Boolean}
+ */
+exports.range = function(val, options) {
+  return val != null && (options.from <= val && val <= options.to);
+};
+
+/**
+ * Check if a value exists within an array
+ * @param  {Any} val
+ * @param  {Array} values
+ * @return {Boolean}
+ */
+exports.in = function(val, values) {
+  return indexof(values, val) > -1;
+};
+});
+require.register("ok/index.js", function(module, exports, require){
+var Errors      = require('./lib/errors');
+var validator   = require('validates');
+var each        = require('each');
+
+module.exports = function(attributes, schema) {
+  errors = new Errors;
+
+  each(schema, function(attribute){
+    var value = attributes[attribute];
+
+    // If the rule is required, this is a special case
+    if(schema[attribute].required === true && value == null) {
+      return errors.add(attribute, 'required');
     }
 
-    Errors.prototype.add = function(attr, rule) {
-      var _base;
-      (_base = this.errors)[attr] || (_base[attr] = []);
-      if (!_.contains(this.errors[attr], rule)) {
-        this.length += 1;
-        this.errors[attr].push(rule);
+    each(schema[attribute], function(type){
+      var ruleValue = schema[attribute][type];
+      var validatorMethod = validator[type];
+      var valid = false;
+
+      // Use a custom validator method
+      if (typeof ruleValue === 'function') {
+        if (ruleValue.call(this, value, attributes) === false) {
+          return errors.add(attribute, type);
+        }
       }
-      return this.errors;
-    };
 
-    Errors.prototype.isValid = function(attr) {
-      return !(this.errors[attr] != null);
-    };
-
-    Errors.prototype.get = function(attr) {
-      return this.errors[attr] || false;
-    };
-
-    Errors.prototype.invalid = function(attr) {
-      if (!this.errors[attr]) {
-        return false;
+      // The rule type isn't in the validation object
+      // and a custom validation rule wasn't used
+      if( !validatorMethod ) { 
+        return;
       }
-      return this.errors[attr];
-    };
 
-    Errors.prototype.each = function(attr, callback) {
-      if (_.isFunction(attr)) {
-        return _.each(this.errors, attr, this);
-      } else {
-        return _.each(this.errors[attr], callback, this);
+      // If the rule value is a boolean we'll check
+      // that the validation test returns the same boolean
+      // For example, a number rule may be set to false
+      else if(ruleValue === true || ruleValue === false) {
+        valid = validatorMethod(value) === ruleValue;
       }
-    };
 
-    Errors.prototype.toJSON = function() {
-      return this.errors;
-    };
+      // Otherwise the rule value is being used as options
+      // for the validation method
+      else {
+        valid = validatorMethod(value, ruleValue);
+      }
 
-    return Errors;
+      if (valid === false) {
+        errors.add(attribute, type);
+      }
+    });
 
-  })();
+  });
 
-}).call(this);
+  return errors;
+};
+});
+require.register("ok/lib/errors.js", function(module, exports, require){
+var each = require('each');
+
+/**
+ * Errors object for storing errors from validation.
+ * This provides a nicer interface for working with 
+ * the errors after validating an object
+ */
+function Errors() {
+  this.errors = {};
+  this.length = 0;
+}
+
+/**
+ * Add a new error
+ * @param {String} attr The attribute on which the error occured
+ * @param {String} rule The rule that failed
+ */
+Errors.prototype.add = function(attr, rule) {
+  this.errors[attr] = this.errors[attr] || [];
+
+  // Check if this rule has already been added
+  // as an error. If it has been added then we 
+  // won't create a new error
+  var found = false;
+  each(this.errors[attr], function(existingRule){
+    if(existingRule === rule) found = true;
+  });
+
+  if (found === false) {
+    this.length += 1;
+    this.errors[attr].push(rule);
+  }
+
+  return this.errors;
+};
+
+/**
+ * Is an attribute valie
+ * @param  {String}  attr The attribute you want to check
+ * @return {Boolean}
+ */
+Errors.prototype.isValid = function(attr) {
+  return !(this.errors[attr] != null);
+};
+
+/**
+ * Get the errors for an attribute
+ * @param  {String} attr
+ * @return {Boolean}
+ */
+Errors.prototype.get = function(attr) {
+  return this.errors[attr] || false;
+};
+
+/**
+ * Is an attribute invalid?
+ * @param  {String} attr 
+ * @return {Boolean}
+ */
+Errors.prototype.invalid = function(attr) {
+  if (!this.errors[attr]) {
+    return false;
+  }
+  return this.errors[attr];
+};
+
+/**
+ * Loop through each of the errors for an attribute
+ * @param  {String}   attr     Attribute name
+ * @param  {Function} callback Callback function
+ * @return {void}
+ */
+Errors.prototype.each = function(attr, callback) {
+  each(this.errors[attr], callback, this);
+};
+
+/**
+ * Loop over the invalid attributes
+ * @param  {Function} callback
+ * @return {void}
+ */
+Errors.prototype.keys = function(callback) {
+  each(this.errors, callback);
+}
+
+/**
+ * Get a JSON format for the errors
+ * @return {Object} JSON version of the errors
+ */
+Errors.prototype.toJSON = function() {
+  return this.errors;
+};
+
+module.exports = Errors;
+});
+require.alias("component-each/index.js", "ok/deps/each/index.js");
+require.alias("component-type/index.js", "component-each/deps/type/index.js");
+
+require.alias("anthonyshort-validates/index.js", "ok/deps/validates/index.js");
+require.alias("component-each/index.js", "anthonyshort-validates/deps/each/index.js");
+require.alias("component-type/index.js", "component-each/deps/type/index.js");
+
+require.alias("component-indexof/index.js", "anthonyshort-validates/deps/indexof/index.js");
+  if ("undefined" == typeof module) {
+    window.ok = require("ok");
+  } else {
+    module.exports = require("ok");
+  }
+})();
